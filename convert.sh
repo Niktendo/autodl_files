@@ -1,5 +1,5 @@
 #!/bin/bash
-scriptName="UUP Converter v0.2.0"
+scriptName="UUP Converter v0.4.0"
 
 editions='analogonecore
 andromeda
@@ -305,8 +305,8 @@ fi
 
 list=
 
-lang=$(grep "_..-.*.esd" <<< "$metadataFiles" | head -1 | sed 's/.*_//g;s/.esd//g')
-metadataFiles=$(grep "$lang" <<< "$metadataFiles" | sort | uniq)
+lang=$(grep -i "_..-.*.esd" <<< "$metadataFiles" | head -1 | sed 's/.*_//g;s/.esd//gi')
+metadataFiles=$(grep -i "$lang" <<< "$metadataFiles" | sort | uniq)
 firstMetadata=$(head -1 <<< "$metadataFiles")
 
 tempDir=`mktemp -d`
@@ -314,7 +314,7 @@ extractDir="$tempDir/extract"
 
 echo -e "\033[1m$scriptName\033[0m"
 
-for file in `find "$uupDir" -type f -name "*.cab"`; do
+for file in `find "$uupDir" -type f -iname "*.cab"`; do
   fileName=`basename $file .cab`
   echo -e "$infoColor""CAB -> ESD:""$resetColor"" $fileName"
 
@@ -492,7 +492,7 @@ echo -e "$infoColor""Creating ISO image...""$resetColor"
 find ISODIR -exec touch {} +
 
 genisoimage -b "boot/etfsboot.com" --no-emul-boot \
-  --eltorito-alt-boot -e "efi/microsoft/boot/efisys.bin" --no-emul-boot \
+  --eltorito-alt-boot -b "efi/microsoft/boot/efisys.bin" --no-emul-boot \
   --udf --hide "*" -V "$isoLabel" -o "$isoName" ISODIR
 
 if [ $? != 0 ]; then
